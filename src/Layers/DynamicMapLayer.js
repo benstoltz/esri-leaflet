@@ -10,9 +10,13 @@ EsriLeaflet.Layers.DynamicMapLayer = EsriLeaflet.Layers.RasterLayer.extend({
   },
 
   initialize: function (url, options) {
-    this.url = EsriLeaflet.Util.cleanUrl(url);
-    this._service = new EsriLeaflet.Services.MapService(this.url, options);
+    options = options || {};
+    options.url = EsriLeaflet.Util.cleanUrl(url);
+    this._service = new EsriLeaflet.Services.MapService(options);
     this._service.on('authenticationrequired requeststart requestend requesterror requestsuccess', this._propagateEvent, this);
+    if (options.proxy){
+      options.f = 'json';
+    }
     L.Util.setOptions(this, options);
   },
 
@@ -86,6 +90,14 @@ EsriLeaflet.Layers.DynamicMapLayer = EsriLeaflet.Layers.RasterLayer.extend({
     var ne = this._map.options.crs.project(bounds._northEast);
     var sw = this._map.options.crs.project(bounds._southWest);
 
+    //ensure that we don't ask ArcGIS Server for a taller image than we have actual map displaying
+    var top = this._map.latLngToLayerPoint(bounds._northEast);
+    var bottom = this._map.latLngToLayerPoint(bounds._southWest);
+
+    if (top.y > 0 || bottom.y < size.y){
+      size.y = bottom.y - top.y;
+    }
+
     var params = {
       bbox: [sw.x, sw.y, ne.x, ne.y].join(','),
       size: size.x + ',' + size.y,
@@ -126,7 +138,7 @@ EsriLeaflet.Layers.DynamicMapLayer = EsriLeaflet.Layers.RasterLayer.extend({
       }, this);
     } else {
       params.f = 'image';
-      this._renderImage(this.url + 'export' + L.Util.getParamString(params), bounds);
+      this._renderImage(this.options.url + 'export' + L.Util.getParamString(params), bounds);
     }
   }
 });

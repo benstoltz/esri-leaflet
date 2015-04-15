@@ -2,7 +2,8 @@ EsriLeaflet.Tasks.IdentifyFeatures = EsriLeaflet.Tasks.Identify.extend({
   setters: {
     'layers': 'layers',
     'precision': 'geometryPrecision',
-    'tolerance': 'tolerance'
+    'tolerance': 'tolerance',
+    'returnGeometry': 'returnGeometry'
   },
 
   params: {
@@ -15,14 +16,14 @@ EsriLeaflet.Tasks.IdentifyFeatures = EsriLeaflet.Tasks.Identify.extend({
   on: function(map){
     var extent = EsriLeaflet.Util.boundsToExtent(map.getBounds());
     var size = map.getSize();
-    this.params.imageDisplay = [size.x, size.y, 96].join(',');
-    this.params.mapExtent=([extent.xmin, extent.ymin, extent.xmax, extent.ymax]).join(',');
+    this.params.imageDisplay = [size.x, size.y, 96];
+    this.params.mapExtent = [extent.xmin, extent.ymin, extent.xmax, extent.ymax];
     return this;
   },
 
   at: function(latlng){
     latlng = L.latLng(latlng);
-    this.params.geometry = ([latlng.lng, latlng.lat]).join(',');
+    this.params.geometry = [latlng.lng, latlng.lat];
     this.params.geometryType = 'esriGeometryPoint';
     return this;
   },
@@ -41,12 +42,22 @@ EsriLeaflet.Tasks.IdentifyFeatures = EsriLeaflet.Tasks.Identify.extend({
 
   run: function (callback, context){
     return this.request(function(error, response){
-      callback.call(context, error, (response && EsriLeaflet.Util.responseToFeatureCollection(response)), response);
+      var featureCollection = EsriLeaflet.Util.responseToFeatureCollection(response);
+      var count = featureCollection.features.length;
+      // tag each feature with the Id of its parent layer
+      if(!error && count > 0){
+        response.results = response.results.reverse();
+        for (var i = 0; i < count; i++) {
+          var feature = featureCollection.features[i];
+          feature.layerId = response.results[i].layerId;
+        }
+      }
+      callback.call(context, error, (response && featureCollection), response);
     }, context);
   }
 
 });
 
-EsriLeaflet.Tasks.identifyFeatures = function(url, params){
-  return new EsriLeaflet.Tasks.IdentifyFeatures(url, params);
+EsriLeaflet.Tasks.identifyFeatures = function(params){
+  return new EsriLeaflet.Tasks.IdentifyFeatures(params);
 };
