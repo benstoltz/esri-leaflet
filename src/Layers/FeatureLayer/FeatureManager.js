@@ -383,22 +383,43 @@
       return this._service.query();
     },
 
+    _getMetadata: function(callback, context){
+      if(this._metadata){
+        var error;
+        callback(context, error, this._metadata);
+      } else {
+        this.metadata(L.Util.bind(function(error, response) {
+          this._metadata = response;
+          callback(context, error, this._metadata);
+        }, this));
+      }
+    },
+
     addFeature: function(feature, callback, context){
-      this._service.addFeature(feature, function(error, response){
-        if(!error){
-          this.refresh();
-        }
-        if(callback){
-          callback.call(context, error, response);
-        }
-      }, this);
-      return this;
+      //still need to pass 'undefined' as a placeholder, not sure how to fix
+      this._getMetadata(L.Util.bind(function(undefined, error, metadata){
+        this._service.addFeature(feature, L.Util.bind(function(error, response){
+          if(!error){
+            // assign ID from result to appropriate objectid field from service metadata
+            feature.properties[metadata.objectIdField] = response.objectId;
+
+            // we also need to update the geojson id for createLayers() to function
+            feature.id = response.objectId;
+            this.createLayers([feature]);
+          }
+
+          if(callback){
+            callback.call(context, error, response);
+          }
+        }, this));
+      }, this));
     },
 
     updateFeature: function(feature, callback, context){
-      return this._service.updateFeature(feature, function(error, response){
+      this._service.updateFeature(feature, function(error, response){
         if(!error){
-          this.refresh();
+          this.removeLayers([feature.id], true);
+          this.createLayers([feature]);
         }
         if(callback){
           callback.call(context, error, response);
@@ -407,7 +428,7 @@
     },
 
     deleteFeature: function(id, callback, context){
-      return this._service.deleteFeature(id, function(error, response){
+      this._service.deleteFeature(id, function(error, response){
         if(!error && response.objectId){
           this.removeLayers([response.objectId], true);
         }
@@ -415,7 +436,21 @@
           callback.call(context, error, response);
         }
       }, this);
+    },
+
+    deleteFeatures: function(ids, callback, context){
+      return this._service.deleteFeatures(ids, function(error, response){
+        if(!error && response.length > 0){
+          for (var i=0; i<response.length; i++){
+            this.removeLayers([response[i].objectId], true);
+          }
+        }
+        if(callback){
+          callback.call(context, error, response);
+        }
+      }, this);
     }
+
   });
 
   /**
