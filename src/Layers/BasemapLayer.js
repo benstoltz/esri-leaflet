@@ -249,8 +249,9 @@
     //   }
     // },
     _getAttributionData: function(url){
-      EsriLeaflet.get(url, {}, function(error, attributions){
+      L.esri.Request.get.JSONP(url, {}, L.Util.bind(function(error, attributions){
         this._attributions = [];
+
         for (var c = 0; c < attributions.contributors.length; c++) {
           var contributor = attributions.contributors[c];
           for (var i = 0; i < contributor.coverageAreas.length; i++) {
@@ -272,7 +273,7 @@
         });
 
         this._updateMapAttribution();
-      }, this);
+      }, this));
     },
     _updateMapAttribution: function(){
       if(this._map && this._map.attributionControl && this._attributions){

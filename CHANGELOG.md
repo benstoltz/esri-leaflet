@@ -4,7 +4,7 @@
 
 #### Breaking Changes
 
-None
+* DynamicMapLayer will now request `json` by default to better expose the authentication process. If you are using ArcGIS Server 10.0 or have disabled CORS on your server you will need to add `useCors: false` to your options.
 
 #### Changes
 * refactor of `FeatureLayer.resetStyle()` behavior. https://github.com/Esri/esri-leaflet/issues/488
@@ -18,6 +18,8 @@ None
 * Added a `deleteFeatures()` method to both `L.esri.Layers.FeatureLayer` and `L.esri.Services.FeatureLayer` for dropping records in bulk. https://github.com/Esri/esri-leaflet/pull/510
 * Improve logic of rendering simplified features with `L.esri.FeatureLayer`. https://github.com/Esri/esri-leaflet/issues/320 and https://github.com/Esri/esri-leaflet/pull/518
 * Various doc improvements.  https://github.com/Esri/esri-leaflet/pull/511 & https://github.com/Esri/esri-leaflet/pull/507 & https://github.com/Esri/esri-leaflet/pull/506 & https://github.com/Esri/esri-leaflet/issues/495
+* DynamicMapLayer will now request `json` by default to better expose authentication helpers
+* Attribution for basemaps is now always requested with JSONP
 
 ## Release Candidate 6
 
