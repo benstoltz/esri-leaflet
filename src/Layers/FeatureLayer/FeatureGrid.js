@@ -9,6 +9,7 @@ export var FeatureGrid = L.Layer.extend({
 
   initialize: function (options) {
     options = L.setOptions(this, options);
+    this._zooming = false;
   },
 
   onAdd: function (map) {
@@ -26,6 +27,7 @@ export var FeatureGrid = L.Layer.extend({
   getEvents: function () {
     var events = {
       moveend: this._update,
+      zoomstart: this._zoomstart,
       zoomend: this._reset
     };
 
@@ -42,6 +44,10 @@ export var FeatureGrid = L.Layer.extend({
     return this;
   },
 
+  _zoomstart: function () {
+    this._zooming = true;
+  },
+
   _reset: function () {
     this._removeCells();
 
@@ -52,6 +58,7 @@ export var FeatureGrid = L.Layer.extend({
     this._cellNumBounds = this._getCellNumBounds();
 
     this._resetWrap();
+    this._zooming = false;
   },
 
   _resetWrap: function () {
@@ -109,7 +116,7 @@ export var FeatureGrid = L.Layer.extend({
     // create a queue of coordinates to load cells from
     for (j = bounds.min.y; j <= bounds.max.y; j++) {
       for (i = bounds.min.x; i <= bounds.max.x; i++) {
-        coords = new L.Point(i, j);
+        coords = L.point(i, j);
         coords.z = zoom;
 
         if (this._isValidCell(coords)) {
@@ -167,7 +174,7 @@ export var FeatureGrid = L.Layer.extend({
     var nw = map.wrapLatLng(map.unproject(nwPoint, coords.z));
     var se = map.wrapLatLng(map.unproject(sePoint, coords.z));
 
-    return new L.LatLngBounds(nw, se);
+    return L.latLngBounds(nw, se);
   },
 
   // converts cell coordinates to key for the cell cache
@@ -181,7 +188,7 @@ export var FeatureGrid = L.Layer.extend({
     var x = parseInt(kArr[0], 10);
     var y = parseInt(kArr[1], 10);
 
-    return new L.Point(x, y);
+    return L.point(x, y);
   },
 
   // remove any present cells that are off the specified bounds

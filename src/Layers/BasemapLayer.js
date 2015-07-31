@@ -1,7 +1,7 @@
 import L from 'leaflet';
-import logo from '../Controls/Logo.js';
-import { jsonp } from '../Request.js';
-import { pointerEvents } from '../Support.js';
+import logo from '../Controls/Logo';
+import { jsonp } from '../Request';
+import { pointerEvents } from '../Support';
 
 var tileProtocol = (window.location.protocol !== 'https:') ? 'http:' : 'https:';
 
@@ -261,12 +261,12 @@ export var BasemapLayer = L.TileLayer.extend({
         var contributor = attributions.contributors[c];
         for (var i = 0; i < contributor.coverageAreas.length; i++) {
           var coverageArea = contributor.coverageAreas[i];
-          var southWest = new L.LatLng(coverageArea.bbox[0], coverageArea.bbox[1]);
-          var northEast = new L.LatLng(coverageArea.bbox[2], coverageArea.bbox[3]);
+          var southWest = L.latLng(coverageArea.bbox[0], coverageArea.bbox[1]);
+          var northEast = L.latLng(coverageArea.bbox[2], coverageArea.bbox[3]);
           this._attributions.push({
             attribution: contributor.attribution,
             score: coverageArea.score,
-            bounds: new L.LatLngBounds(southWest, northEast),
+            bounds: L.latLngBounds(southWest, northEast),
             minZoom: coverageArea.zoomMin,
             maxZoom: coverageArea.zoomMax
           });

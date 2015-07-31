@@ -1,33 +1,37 @@
 #!/bin/bash
 
-# Get current version from package.json
+# config
 VERSION=$(node --eval "console.log(require('./package.json').version);")
+NAME=$(node --eval "console.log(require('./package.json').name);")
 
-# Get a list of files to add form package.json
-FILES=$(node --eval "console.log(require('./package.json').files.join(' '));")
+# build and test
+npm test || exit 1
 
-# Checkout temp branch for release
+# checkout temp branch for release
 git checkout -b gh-release
 
-# Build and test
-npm test || exit 1
+# run prepublish to build files
 npm run prepublish
 
-# Force add files
-git add $FILES -f
+# force add files
+git add dist -f
 
-# Commit changes with a versioned commit message
+# commit changes with a versioned commit message
 git commit -m "build $VERSION"
 
-# Create a ZIP archive of the dist files
-zip -r ./dist/esri-leaflet-v$VERSION.zip $FILES
+# push commit so it exists on GitHub when we run gh-release
+git push upstream gh-release
 
-# Run gh-release to create the tag and push release to github
-gh-release --assets ./dist/esri-leaflet-v$VERSION.zip
+# create a ZIP archive of the dist files
+zip -r $NAME-v$VERSION.zip dist
 
-# Publish release on NPM
-npm publish
+# run gh-release to create the tag and push release to github
+gh-release --assets $NAME-v$VERSION.zip
 
-# Checkout master and cleanup release branch
+# checkout master and delete release branch locally and on GitHub
 git checkout master
 git branch -D gh-release
+git push upstream :gh-release
+
+# publish release on NPM
+npm publish

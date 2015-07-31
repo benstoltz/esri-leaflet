@@ -1,37 +1,46 @@
 #!/usr/bin/env node
 
-var esperanto = require('esperanto');
 var path = require('path');
-var minify = require('uglify-js').minify;
 var fs = require('fs');
+var rollup = require('rollup').rollup;
+var UglifyJS = require('uglify-js');
 var pkg = require('../package.json');
+var entryFile = 'src/EsriLeaflet.js';
 
-var copyright = '/*! ' + pkg.name + ' - v' + pkg.version + ' - ' + new Date().toDateString() + '\n' +
-                '*   Copyright (c) ' + new Date().getFullYear() + ' Environmental Systems Research Institute, Inc.\n' +
-                '*   ' + pkg.license + ' ' +
-                '*/\n';
+var copyright = '/* ' + pkg.name + ' - v' + pkg.version + ' - ' + new Date().toString() + '\n' +
+                ' * Copyright (c) ' + new Date().getFullYear() + ' Environmental Systems Research Institute, Inc.\n' +
+                ' * ' + pkg.license + ' */';
 
-esperanto.bundle({
-  entry: path.resolve('src/EsriLeaflet.js'),
-  skip: ['leaflet']
+rollup({
+  entry: path.resolve(entryFile),
+  external: ['leaflet']
 }).then(function (bundle) {
-  var transpiled = bundle.toUmd({
-    strict: true,
+  var transpiled = bundle.generate({
+    format: 'umd',
     sourceMap: true,
-    sourceMapFile: './esri-leaflet-src.js',
-    name: 'L.esri'
+    sourceMapFile: pkg.name + '.js',
+    moduleName: 'L.esri'
   });
 
-  var compressed = minify(transpiled.code, {
-    fromString: true,
-    inSourceMap: JSON.parse(transpiled.map),
-    outSourceMap: './esri-leaflet.js.map'
+  var sourceMap = UglifyJS.SourceMap({
+    file: pkg.name + '.js',
+    root: process.cwd(),
+    orig: JSON.parse(transpiled.map)
   });
 
-  fs.writeFileSync(path.join('dist', 'esri-leaflet.js'), copyright + compressed.code);
-  fs.writeFileSync(path.join('dist', 'esri-leaflet.js.map'), compressed.map);
+  var stream = UglifyJS.OutputStream({
+    preamble: copyright,
+    source_map: sourceMap
+  });
+
+  UglifyJS.parse(transpiled.code).print(stream);
+
+  var code = stream.toString();
+  var map = sourceMap.toString().replace(new RegExp(path.join(process.cwd(), 'src'), 'g'), '../src');
+
+  fs.writeFileSync(path.join('dist', pkg.name + '.js'), code + '\n//# sourceMappingURL=./' + pkg.name + '.js.map');
+  fs.writeFileSync(path.join('dist', pkg.name + '.js.map'), map);
   process.exit(0);
-
 }).catch(function (error) {
   console.log(error);
   process.exit(1);
