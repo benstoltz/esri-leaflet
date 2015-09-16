@@ -19,11 +19,11 @@ Here is a quick example to get you started. Just copy/paste into your own `.html
 <html>
   <head>
      <!-- Load Leaflet from CDN-->
-    <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.css" />
-    <script src="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.js"></script>
+    <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-1.0.0-b1/leaflet.css" />
+    <script src="http://cdn.leafletjs.com/leaflet-1.0.0-b1/leaflet.js"></script>
 
-    <!-- Load Esri Leaflet from CDN -->
-    <script src="http://cdn.jsdelivr.net/leaflet.esri/1.0.0/esri-leaflet.js"></script>
+    <!-- Load Esri Leaflet locally, after cloning this repository -->
+    <script src="esri-leaflet/dist/esri-leaflet.js"></script>
 
     <style>
       html, body,  #map {
@@ -78,6 +78,7 @@ You can also post issues on [GIS Stackexchange](http://gis.stackexchange.com/que
 * [Will Esri Leaflet replace the ArcGIS API for JavaScript?](https://github.com//Esri/esri-leaflet/wiki/FAQ#will-esri-leaflet-replace-the-arcgis-api-for-javascript)
 * [What is the benefit of using Esri Leaflet over using Leaflet all by itself?](https://github.com//Esri/esri-leaflet/wiki/FAQ#why-use-esri-leaflet)
 * [What are the goals of Esri Leaflet?](https://github.com//Esri/esri-leaflet/wiki/FAQ#what-are-the-goals-of-esri-leaflet)
+* [Can I use Esri Leaflet with Leaflet Version 1.0.0-beta1?](https://github.com//Esri/esri-leaflet/wiki/FAQ#can-i-use-esri-leaflet-with-leaflet-version-100-beta1)
 * [How do you decide what features get included in Esri Leaflet?](https://github.com//Esri/esri-leaflet/wiki/FAQ#how-do-you-decide-what-features-get-included-in-esri-leaflet)
 * [I have an idea! What should I do?](https://github.com//Esri/esri-leaflet/wiki/FAQ#i-have-an-idea-what-should-i-do)
 * [When will you support "x"?](https://github.com//Esri/esri-leaflet/wiki/FAQ#when-will-you-support-x)
@@ -85,12 +86,13 @@ You can also post issues on [GIS Stackexchange](http://gis.stackexchange.com/que
 * [When will feature "x" get done?](https://github.com//Esri/esri-leaflet/wiki/FAQ#when-will-feature-x-get-done)
 * [I want to contribute. How can I help?](https://github.com//Esri/esri-leaflet/wiki/FAQ#i-want-to-contribute-how-can-i-help)
 * [I built something with Esri Leaflet can I show you?](https://github.com//Esri/esri-leaflet/wiki/FAQ#i-built-something-with-esri-leaflet-can-i-show-you)
-* [I built a reusable component (layer type, api wrapper, ui control ect...) can I contribute it to Esri Leaflet?](https://github.com//Esri/esri-leaflet/wiki/FAQ#i-built-a-reusable-component-layer-type-api-wrapper-ui-control-ect-can-i-contribute-it-to-esri-leaflet)
+* [I built a reusable component (layer type, api wrapper, ui control etc...) can I contribute it to Esri Leaflet?](https://github.com//Esri/esri-leaflet/wiki/FAQ#i-built-a-reusable-component-layer-type-api-wrapper-ui-control-etc-can-i-contribute-it-to-esri-leaflet)
 * [What are the terms of use for Esri map tiles?](https://github.com//Esri/esri-leaflet/wiki/FAQ#what-are-the-terms-of-use-for-esri-map-tiles)
 * [Which services require authentication?](https://github.com//Esri/esri-leaflet/wiki/FAQ#which-services-require-authentication)
 * [What are some good Leaflet Plugins?](https://github.com//Esri/esri-leaflet/wiki/FAQ#what-are-some-good-leaflet-plugins)
 * [What browsers does Esri Leaflet support?](https://github.com//Esri/esri-leaflet/wiki/FAQ#what-browsers-does-esri-leaflet-support)
 * [What versions of ArcGIS Server does Esri Leaflet support?](https://github.com//Esri/esri-leaflet/wiki/FAQ#what-versions-of-arcgis-server-does-esri-leaflet-support)
+* [Upgrading the version of Esri Leaflet used in my app broke everything!](https://github.com//Esri/esri-leaflet/wiki/FAQ#upgrading-the-version-of-esri-leaflet-used-in-my-app-broke-everything)
 
 ### Projects Using Esri Leaflet
 
@@ -112,7 +114,7 @@ In order to compile the API yourself and/or run the tests, make sure you have th
 
 ### Dependencies
 
-* [Leaflet](http://leafletjs.com) version 0.7.3 is required.
+* [Leaflet](http://leafletjs.com) version leaflet-1.0.0-b1 is required.
 
 ### Versioning
 
